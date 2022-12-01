@@ -3,11 +3,12 @@
 #include <string>
 #include <string.h>
 #include <cmath>
+#include <stdlib.h>
 
 using namespace std;
 
 
-long double calcula_com_unidade(float componente, int unidade){
+long double calcula_com_unidade(long double componente, int unidade){
     switch (unidade)
     {
     case 1:
@@ -74,12 +75,15 @@ long double calcula_com_unidade(float componente, int unidade){
         return componente * 0.000000000000000001;
         break;
     
+    case 17:
+        return componente * 1;
+    
     default:
         break;
     }
 }
 
-void exibe_menu(){
+void exibe_menu_unidade(){
     cout << "1 - exa(E) \n"
     "2 - peta(P) \n"
     "3 - tera(T) \n"
@@ -95,29 +99,52 @@ void exibe_menu(){
     "13 - nano(n) \n"
     "14 - pico(p) \n"
     "15 - femto(f) \n"
-    "16 - atto(a)" << endl;
+    "16 - atto(a) \n"
+    "17 - unidade " << endl;
 }
 
-double calcula_sigma(double resistor, double capacitor){
+long double calcula_sigma(long double resistor, long double capacitor){
     return 1/(2*resistor*capacitor);
 }
 
-double calcula_omega0(double indutor, double capacitor){
+long double calcula_omega0(long double indutor, long double capacitor){
     return 1/(sqrt(indutor*capacitor));
 }
 
-double calcula_omegaD(double sigma, double omega0){
+long double calcula_omegaD(long double sigma, long double omega0){
     return sqrt((omega0*omega0)-(sigma*sigma));
 }
 
-void exibe_tipo_circuito(double sigma, double omega0){
-    if(sigma > omega0){
+void exibe_tipo_circuito(long double sigma, long double omega0){
+    if((sigma*sigma) > (omega0*omega0)){
         cout << "Circuito super amortecido" << endl;
-    } else if (sigma = omega0){
+    } else if ((sigma*sigma) == (omega0*omega0)){
         cout << "Circuito criticamente amortecido" << endl;
     } else {
         cout << "Circuito subamortecido" << endl;
     }
+}
+
+int testa_subamortecido(long double sigma, long double omega0){
+    if((omega0*omega0) > (sigma*sigma)){
+        return 1;
+    } else { 
+        return 0;
+    }
+}
+
+void exibe_sigma_omega0_omegaD(long double sigma, long double omega0, long double omegaD){
+    cout << "Valor de sigma: " << sigma << endl;
+    cout << "Valor de omega_0: " << omega0 << endl;
+    if(testa_subamortecido(sigma, omega0)){
+        cout << "Valor de omega_D: " << omegaD << endl;
+    }
+}
+
+void saida(long double sigma, long double omega0, long double omegaD){
+    cout << "Autores: Matheus Ferreira, Matheus Mendonca" << endl;
+    exibe_tipo_circuito(sigma, omega0);
+    exibe_sigma_omega0_omegaD(sigma, omega0, omegaD);
 }
 
 int main(){
@@ -126,6 +153,12 @@ int main(){
     long double indutor = 0;
     int unidade = 0;
 
+    long double v_c0 = 0;
+    long double i_l0 = 0;
+
+    long double sigma = 0;
+    long double omega0 = 0;
+    long double omegaD = 0;
 
     cout << "-- BEM VINDO -- \n"
     // Para o resistor
@@ -133,39 +166,66 @@ int main(){
     cin >> resistor;
 
     cout << "Diga a unidade do resistor: " << endl;
-    exibe_menu();
-
+    exibe_menu_unidade();
     cin >> unidade;
 
-    resistor = calcula_com_unidade(resistor, unidade);
+    system("clear||cls");
 
-    cout << "Valor do resistor: " << resistor << endl;
+    resistor = calcula_com_unidade(resistor, unidade);
 
     //para o capacitor
     cout << "Digite o valor do capacitor: ";
     cin >> capacitor;
 
     cout << "Diga a unidade do capacitor: " << endl;
-    exibe_menu();
-
+    exibe_menu_unidade();
     cin >> unidade;
 
-    capacitor = calcula_com_unidade(capacitor, unidade);
+    system("clear||cls");
 
-    cout << "Valor do capacitor: " << capacitor << endl;
+    capacitor = calcula_com_unidade(capacitor, unidade);
 
     //para o indutor
     cout << "Digite o valor do indutor: ";
     cin >> indutor;
 
     cout << "Diga a unidade do indutor: " << endl;
-    exibe_menu();
-
+    exibe_menu_unidade();
     cin >> unidade;
+
+    system("clear||cls");
 
     indutor = calcula_com_unidade(indutor, unidade);
 
-    cout << "Valor do indutor: " << indutor << endl;
+    //v_c(0) no capacitor
+    cout << "Digite o valor da tensao inicial do capacitor v_c(0): ";
+    cin >> v_c0;
+
+    cout << "Diga a unidade da tensao inicial: " << endl;
+    exibe_menu_unidade();
+    cin >> unidade;
+
+    system("clear||cls");
+
+    v_c0 = calcula_com_unidade(v_c0, unidade);
+
+    //i_l(0) no indutor
+    cout << "Digite o valor da corrente inicial do indutor i_l(0): ";
+    cin >> i_l0;
+
+    cout << "Diga a unidade da corrente inicial: " << endl;
+    exibe_menu_unidade();
+    cin >> unidade;
+
+    system("clear||cls");
+
+    i_l0 = calcula_com_unidade(i_l0, unidade);
+
+    sigma = calcula_sigma(resistor, capacitor);
+    omega0 = calcula_omega0(indutor, capacitor);
+    omegaD = calcula_omegaD(sigma, omega0);
+
+    saida(sigma, omega0, omegaD);
 
     return 0;
     

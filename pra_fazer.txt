@@ -1,0 +1,6 @@
+ - se digitar algum valor 0, não precisa dizer a unidade
+ - mudar a opção de "unidade"
+ - tratar os erros possiveis
+ - calcular as constantes para cada circuito dependendo da resposta
+ - calcular tm e v(tm)
+ - colocar a unidade de sigma, omega0 e omegaD
