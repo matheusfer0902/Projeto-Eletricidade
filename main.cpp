@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string>
 #include <string.h>
+#include <cmath>
 
 using namespace std;
 
@@ -95,6 +96,28 @@ void exibe_menu(){
     "14 - pico(p) \n"
     "15 - femto(f) \n"
     "16 - atto(a)" << endl;
+}
+
+double calcula_sigma(double resistor, double capacitor){
+    return 1/(2*resistor*capacitor);
+}
+
+double calcula_omega0(double indutor, double capacitor){
+    return 1/(sqrt(indutor*capacitor));
+}
+
+double calcula_omegaD(double sigma, double omega0){
+    return sqrt((omega0*omega0)-(sigma*sigma));
+}
+
+void exibe_tipo_circuito(double sigma, double omega0){
+    if(sigma > omega0){
+        cout << "Circuito super amortecido" << endl;
+    } else if (sigma = omega0){
+        cout << "Circuito criticamente amortecido" << endl;
+    } else {
+        cout << "Circuito subamortecido" << endl;
+    }
 }
 
 int main(){
