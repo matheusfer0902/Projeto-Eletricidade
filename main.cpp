@@ -100,7 +100,7 @@ void exibe_menu_unidade(){
     "14 - pico(p) \n"
     "15 - femto(f) \n"
     "16 - atto(a) \n"
-    "17 - unidade " << endl;
+    "17 - Usar padrao (SI). " << endl;
 }
 
 long double calcula_sigma(long double resistor, long double capacitor){
@@ -278,61 +278,96 @@ int main(){
     "Digite o valor do resistor: ";
     cin >> resistor;
 
-    cout << "Diga a unidade do resistor: " << endl;
-    exibe_menu_unidade();
-    cin >> unidade;
+    if(resistor != 0){
+        cout << "Diga a unidade do resistor: " << endl;
+        exibe_menu_unidade();
+        cin >> unidade;
+
+        if(unidade < 1 || unidade > 17){
+            cout << "digite um valor valido. (numero entre 1 e 17)" << endl;
+            return -1;
+        }
+
+        resistor = calcula_com_unidade(resistor, unidade);
+    }
 
     system("clear||cls");
-
-    resistor = calcula_com_unidade(resistor, unidade);
 
     //para o capacitor
     cout << "Digite o valor do capacitor: ";
     cin >> capacitor;
 
-    cout << "Diga a unidade do capacitor: " << endl;
-    exibe_menu_unidade();
-    cin >> unidade;
+    if(capacitor != 0){
+        cout << "Diga a unidade do capacitor: " << endl;
+        exibe_menu_unidade();
+        cin >> unidade;
+
+        if(unidade < 1 || unidade > 17){
+            cout << "digite um valor valido. (numero entre 1 e 17)" << endl;
+            return -1;
+        }
+
+        capacitor = calcula_com_unidade(capacitor, unidade);
+    }
 
     system("clear||cls");
-
-    capacitor = calcula_com_unidade(capacitor, unidade);
 
     //para o indutor
     cout << "Digite o valor do indutor: ";
     cin >> indutor;
 
-    cout << "Diga a unidade do indutor: " << endl;
-    exibe_menu_unidade();
-    cin >> unidade;
+    if(indutor != 0){
+        cout << "Diga a unidade do indutor: " << endl;
+        exibe_menu_unidade();
+        cin >> unidade;
+
+        if(unidade < 1 || unidade > 17){
+            cout << "digite um valor valido. (numero entre 1 e 17)" << endl;
+            return -1;
+        }
+
+        indutor = calcula_com_unidade(indutor, unidade);
+    }
 
     system("clear||cls");
-
-    indutor = calcula_com_unidade(indutor, unidade);
 
     //v_c(0) no capacitor
     cout << "Digite o valor da tensao inicial do capacitor v_c(0): ";
     cin >> v_c0;
 
-    cout << "Diga a unidade da tensao inicial: " << endl;
-    exibe_menu_unidade();
-    cin >> unidade;
+    if(v_c0 != 0){
+        cout << "Diga a unidade da tensao inicial: " << endl;
+        exibe_menu_unidade();
+        cin >> unidade;
+
+        if(unidade < 1 || unidade > 17){
+            cout << "digite um valor valido. (numero entre 1 e 17)" << endl;
+            return -1;
+        }
+
+        v_c0 = calcula_com_unidade(v_c0, unidade);
+    }
 
     system("clear||cls");
-
-    v_c0 = calcula_com_unidade(v_c0, unidade);
 
     //i_l(0) no indutor
     cout << "Digite o valor da corrente inicial do indutor i_l(0): ";
     cin >> i_l0;
 
-    cout << "Diga a unidade da corrente inicial: " << endl;
-    exibe_menu_unidade();
-    cin >> unidade;
+    if(i_l0 != 0){
+        cout << "Diga a unidade da corrente inicial: " << endl;
+        exibe_menu_unidade();
+        cin >> unidade;
+
+        if(unidade < 1 || unidade > 17){
+            cout << "digite um valor valido. (numero entre 1 e 17)" << endl;
+            return -1;
+        }
+
+        i_l0 = calcula_com_unidade(i_l0, unidade);
+    }
 
     system("clear||cls");
-
-    i_l0 = calcula_com_unidade(i_l0, unidade);
 
     sigma = calcula_sigma(resistor, capacitor);
     omega0 = calcula_omega0(indutor, capacitor);
