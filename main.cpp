@@ -222,7 +222,7 @@ void exibe_b1_b2(long double b1, long double b2, long double sigma, long double 
         } else if(b2 > 0){
             cout << "v(t) = e^(-" << sigma << "t) * ( " << b1 << "cos(" << omegaD << "t) + " << b2 << "sen(" << omegaD << "t)) (V)" << endl;
         } else if (b2 == 0){
-            cout << "v(t) = e^(+" << sigma << "t) * ( " << b1 << "cos(" << omegaD << "t)) (V)" << endl;
+            cout << "v(t) = e^(-" << sigma << "t) * ( " << b1 << "cos(" << omegaD << "t)) (V)" << endl;
         }
             
     }
@@ -258,6 +258,20 @@ void saida(long double sigma, long double omega0, long double omegaD, long doubl
     exibe_tipo_circuito(sigma, omega0);
     exibe_sigma_omega0_omegaD(sigma, omega0, omegaD);
     calcula_circuito(sigma, omega0, omegaD, vc_0, il_0, resistor, capacitor, indutor);
+}
+
+void calcula_tm(long double b1, long double b2, long double sigma, long double omegaD, long double omega0){
+    long double tm = 0;
+    if(testa_subamortecido(sigma, omega0)){
+        if(b1 == 0){
+            long double calc_para_arctg = omegaD / (-sigma);
+            tm = atan(calc_para_arctg) / omegaD;
+            cout << "O valor de tm: " << tm << endl;
+        } else if (b2 == 0){
+            long double calc_para_arctg = (-sigma) / (omegaD);
+            tm = atan(calc_para_arctg) / 4,545;
+        }
+    }
 }
 
 int main(){
