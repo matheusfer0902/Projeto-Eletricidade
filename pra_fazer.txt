@@ -2,7 +2,6 @@
  - mudar a opção de "unidade"
  - tratar os erros possiveis
  - calcular as constantes para criticamente e super
- - corrigir o expoente na saida, caso necessario e o seu sinal (sempre negativo até agora)
- - Arrumar bug no b2 nos casos de teste
+ - corrigir o expoente na saida, caso necessario
  - calcular tm e v(tm)
  - colocar a unidade de sigma, omega0 e omegaD
