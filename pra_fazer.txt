@@ -1,5 +1,3 @@
- - se digitar algum valor 0, não precisa dizer a unidade
- - mudar a opção de "unidade"
  - tratar os erros possiveis
  - calcular as constantes para criticamente e super
  - corrigir o expoente na saida, caso necessario
