@@ -141,10 +141,121 @@ void exibe_sigma_omega0_omegaD(long double sigma, long double omega0, long doubl
     }
 }
 
-void saida(long double sigma, long double omega0, long double omegaD){
+long double calcula_corrente_resistor(long double resistor, long double tensao){
+    return (tensao)/(resistor);
+}
+
+long double calcula_corrente_capacitor(long double corrente_resistor, long double corrente_indutor){
+    if(corrente_indutor < 0 && corrente_resistor < 0){
+        return (corrente_indutor + corrente_resistor) - 2*(corrente_indutor + corrente_resistor);
+    } else if(corrente_indutor > 0 && corrente_resistor > 0){
+        return corrente_indutor + corrente_resistor;
+    } else if (corrente_indutor < 0 && corrente_resistor > 0){
+        return corrente_resistor - corrente_indutor;
+    } else if (corrente_indutor > 0 && corrente_resistor < 0){
+        return corrente_indutor - corrente_resistor;
+    } else if (corrente_indutor == 0 && corrente_resistor != 0){
+        return corrente_resistor;
+    } else if (corrente_indutor != 0 && corrente_resistor ==0){
+        return corrente_indutor;
+    }
+}
+
+long double calculo_para_b2(long double corrente_capacitor, long double capacitor, long double b1, long double omegaD, long double sigma){
+    long double primeira_parte = (corrente_capacitor/capacitor);
+    long double multi = (b1*sigma) - 2*(b1*sigma);
+    if(multi < 0){
+        if(multi < primeira_parte){
+            return (primeira_parte + multi)/omegaD;
+        } else {
+            return (multi + primeira_parte)/omegaD;
+        }
+    } else if (multi == 0 && primeira_parte != 0){
+        return primeira_parte/omegaD;
+    } else if (multi != 0 && primeira_parte == 0){
+        return multi/omegaD;
+    } else if (multi == primeira_parte){
+        return 0;
+    }
+    /*if(multi < 0 && primeira_parte < 0){
+        if(multi < primeira_parte){
+            return (primeira_parte - multi)/omegaD;
+        } else {
+            return (multi - primeira_parte)/omegaD;
+        }
+    } else if (multi > 0 && primeira_parte > 0){
+        return (multi + primeira_parte)/omegaD;
+    } else if (multi < 0 && primeira_parte > 0){
+        return (primeira_parte - multi)/omegaD;
+    } else if (multi > 0 && primeira_parte < 0){
+        return (multi - primeira_parte)/omegaD;
+    } else if (multi == 0 && primeira_parte != 0){
+        return primeira_parte/omegaD;
+    } else if (multi != 0 && primeira_parte == 0){
+        return multi/omegaD;
+    } else if (multi == primeira_parte){
+        return 0;
+    }*/
+}
+
+void exibe_b1_b2(long double b1, long double b2, long double sigma, long double omegaD){
+    if(b1 < 0){
+            if(b2 < 0){
+                cout << "v(t) = e^(-" << sigma << "t) * ( -" << b1 << "cos(" << omegaD << "t) - " << b2 << "sen(" << omegaD << "t)) (V)" << endl;
+            } else if(b2 > 0){
+                cout << "v(t) = e^(-" << sigma << "t) * ( -" << b1 << "cos(" << omegaD << "t) + " << b2 << "sen(" << omegaD << "t)) (V)" << endl;
+            }
+        } else if(b1 == 0){
+            if(b2 < 0){
+                cout << "v(t) = e^(-" << sigma << "t) * ( -" << b2 << "sen(" << omegaD << "t)) (V)" << endl;
+            } else if(b2 > 0){
+                cout << "v(t) = e^(-" << sigma << "t) * ( " << b2 << "sen(" << omegaD << "t)) (V)" << endl;
+            }
+        } else if( b1 > 0){
+            if(b2 < 0){
+                cout << "v(t) = e^(-" << sigma << "t) * ( " << b1 << "cos(" << omegaD << "t) - " << b2 << "sen(" << omegaD << "t)) (V)" << endl;
+            } else if(b2 > 0){
+                cout << "v(t) = e^(-" << sigma << "t) * ( " << b1 << "cos(" << omegaD << "t) + " << b2 << "sen(" << omegaD << "t)) (V)" << endl;
+            }
+            
+        } else if(b2 == 0){
+            if(b1 > 0){
+                cout << "v(t) = e^(+" << sigma << "t) * ( " << b1 << "cos(" << omegaD << "t) (V)" << endl;
+            } else if(b1 < 0){
+                cout << "v(t) = e^(-" << sigma << "t ) * ( - " << b1 << "cos(" << omegaD << "t) (V)" << endl;
+            }
+        }
+}
+
+int calcula_circuito(long double sigma, long double omega0, long double omegaD, long double vc_0, long double il_0, long double resistor, long double capacitor, long double indutor){
+    const long double epsilon = 4.94065645841247E-324;
+    
+    if((omega0*omega0) > (sigma*sigma)){ // subamortecido
+        
+        long double corrente_resistor = 0;
+        long double corrente_capacitor = 0;
+        
+        long double b1 = vc_0, b2 = 0;
+        corrente_resistor = calcula_corrente_resistor(resistor, vc_0);
+        corrente_capacitor = calcula_corrente_capacitor(corrente_resistor, il_0);
+        b2 = calculo_para_b2(corrente_capacitor, capacitor, b1, omegaD, sigma);
+
+        cout << "Valor de b1: " << b1 << endl;
+        cout << "Valor de b2: " << b2 << endl;
+        exibe_b1_b2(b1, b2, sigma, omegaD);
+
+    } else if((omega0*omega0) == (sigma*sigma)){ // criticamente amortecido
+
+    } else { // super amortecido
+
+    }
+}
+
+void saida(long double sigma, long double omega0, long double omegaD, long double vc_0, long double il_0, long double resistor, long double capacitor, long double indutor){
     cout << "Autores: Matheus Ferreira, Matheus Mendonca" << endl;
     exibe_tipo_circuito(sigma, omega0);
     exibe_sigma_omega0_omegaD(sigma, omega0, omegaD);
+    calcula_circuito(sigma, omega0, omegaD, vc_0, il_0, resistor, capacitor, indutor);
 }
 
 int main(){
@@ -225,7 +336,7 @@ int main(){
     omega0 = calcula_omega0(indutor, capacitor);
     omegaD = calcula_omegaD(sigma, omega0);
 
-    saida(sigma, omega0, omegaD);
+    saida(sigma, omega0, omegaD, v_c0, i_l0, resistor, capacitor, indutor);
 
     return 0;
     
