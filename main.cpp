@@ -146,14 +146,15 @@ long double calcula_corrente_resistor(long double resistor, long double tensao){
 }
 
 long double calcula_corrente_capacitor(long double corrente_resistor, long double corrente_indutor){
+    corrente_resistor = corrente_resistor - 2*corrente_resistor;
     if(corrente_indutor < 0 && corrente_resistor < 0){
-        return (corrente_indutor + corrente_resistor) - 2*(corrente_indutor + corrente_resistor);
+        return (corrente_indutor + corrente_resistor);
     } else if(corrente_indutor > 0 && corrente_resistor > 0){
         return corrente_indutor + corrente_resistor;
     } else if (corrente_indutor < 0 && corrente_resistor > 0){
         return corrente_resistor - corrente_indutor;
     } else if (corrente_indutor > 0 && corrente_resistor < 0){
-        return corrente_indutor - corrente_resistor;
+        return corrente_indutor + corrente_resistor;
     } else if (corrente_indutor == 0 && corrente_resistor != 0){
         return corrente_resistor;
     } else if (corrente_indutor != 0 && corrente_resistor ==0){
@@ -200,31 +201,31 @@ long double calculo_para_b2(long double corrente_capacitor, long double capacito
 
 void exibe_b1_b2(long double b1, long double b2, long double sigma, long double omegaD){
     if(b1 < 0){
-            if(b2 < 0){
-                cout << "v(t) = e^(-" << sigma << "t) * ( -" << b1 << "cos(" << omegaD << "t) - " << b2 << "sen(" << omegaD << "t)) (V)" << endl;
-            } else if(b2 > 0){
-                cout << "v(t) = e^(-" << sigma << "t) * ( -" << b1 << "cos(" << omegaD << "t) + " << b2 << "sen(" << omegaD << "t)) (V)" << endl;
-            }
-        } else if(b1 == 0){
-            if(b2 < 0){
-                cout << "v(t) = e^(-" << sigma << "t) * ( -" << b2 << "sen(" << omegaD << "t)) (V)" << endl;
-            } else if(b2 > 0){
-                cout << "v(t) = e^(-" << sigma << "t) * ( " << b2 << "sen(" << omegaD << "t)) (V)" << endl;
-            }
-        } else if( b1 > 0){
-            if(b2 < 0){
-                cout << "v(t) = e^(-" << sigma << "t) * ( " << b1 << "cos(" << omegaD << "t) - " << b2 << "sen(" << omegaD << "t)) (V)" << endl;
-            } else if(b2 > 0){
-                cout << "v(t) = e^(-" << sigma << "t) * ( " << b1 << "cos(" << omegaD << "t) + " << b2 << "sen(" << omegaD << "t)) (V)" << endl;
-            }
-            
-        } else if(b2 == 0){
-            if(b1 > 0){
-                cout << "v(t) = e^(+" << sigma << "t) * ( " << b1 << "cos(" << omegaD << "t) (V)" << endl;
-            } else if(b1 < 0){
-                cout << "v(t) = e^(-" << sigma << "t ) * ( - " << b1 << "cos(" << omegaD << "t) (V)" << endl;
-            }
+        if(b2 < 0){
+            cout << "v(t) = e^(-" << sigma << "t) * ( -" << b1 << "cos(" << omegaD << "t) - " << b2 << "sen(" << omegaD << "t)) (V)" << endl;
+        } else if(b2 > 0){
+            cout << "v(t) = e^(-" << sigma << "t) * ( -" << b1 << "cos(" << omegaD << "t) + " << b2 << "sen(" << omegaD << "t)) (V)" << endl;
+        } else if(b2 == 0) {
+            cout << "v(t) = e^(-" << sigma << "t ) * ( - " << b1 << "cos(" << omegaD << "t)) (V)" << endl;
         }
+    } else if(b1 == 0){
+        if(b2 < 0){
+            cout << "v(t) = e^(-" << sigma << "t) * ( -" << b2 << "sen(" << omegaD << "t)) (V)" << endl;
+        } else if(b2 > 0){
+            cout << "v(t) = e^(-" << sigma << "t) * ( " << b2 << "sen(" << omegaD << "t)) (V)" << endl;
+        } else if (b2 == 0){
+            cout << "b1 e b2 sao 0" << endl;
+        }
+    } else if( b1 > 0){
+        if(b2 < 0){
+            cout << "v(t) = e^(-" << sigma << "t) * ( " << b1 << "cos(" << omegaD << "t) - " << b2 << "sen(" << omegaD << "t)) (V)" << endl;
+        } else if(b2 > 0){
+            cout << "v(t) = e^(-" << sigma << "t) * ( " << b1 << "cos(" << omegaD << "t) + " << b2 << "sen(" << omegaD << "t)) (V)" << endl;
+        } else if (b2 == 0){
+            cout << "v(t) = e^(+" << sigma << "t) * ( " << b1 << "cos(" << omegaD << "t)) (V)" << endl;
+        }
+            
+    }
 }
 
 int calcula_circuito(long double sigma, long double omega0, long double omegaD, long double vc_0, long double il_0, long double resistor, long double capacitor, long double indutor){
@@ -238,6 +239,7 @@ int calcula_circuito(long double sigma, long double omega0, long double omegaD, 
         long double b1 = vc_0, b2 = 0;
         corrente_resistor = calcula_corrente_resistor(resistor, vc_0);
         corrente_capacitor = calcula_corrente_capacitor(corrente_resistor, il_0);
+        cout << "Corrente capacitor: " << corrente_capacitor << endl;
         b2 = calculo_para_b2(corrente_capacitor, capacitor, b1, omegaD, sigma);
 
         cout << "Valor de b1: " << b1 << endl;
