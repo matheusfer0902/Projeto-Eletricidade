@@ -116,29 +116,32 @@ long double calcula_omegaD(long double sigma, long double omega0){
 }
 
 void exibe_tipo_circuito(long double sigma, long double omega0){
-    if((sigma*sigma) > (omega0*omega0)){
+
+    long double sigma_quadrado = pow(sigma,2);
+    long double omega0_quadrado = pow(omega0,2);
+
+    if((sigma_quadrado) > (omega0_quadrado)){
         cout << "Circuito super amortecido" << endl;
-    } else if ((sigma*sigma) == (omega0*omega0)){
+    }
+
+    if (sigma_quadrado == omega0_quadrado){
         cout << "Circuito criticamente amortecido" << endl;
-    } else {
+    }
+
+    if((sigma_quadrado) < (omega0_quadrado)){
         cout << "Circuito subamortecido" << endl;
     }
 }
 
-int testa_subamortecido(long double sigma, long double omega0){
-    if((omega0*omega0) > (sigma*sigma)){
-        return 1;
-    } else { 
-        return 0;
-    }
-}
+
 
 void exibe_sigma_omega0_omegaD(long double sigma, long double omega0, long double omegaD){
     cout << "Valor de sigma: " << sigma << endl;
     cout << "Valor de omega_0: " << omega0 << endl;
-    if(testa_subamortecido(sigma, omega0)){
+    if((omega0*omega0) > (sigma*sigma)){
         cout << "Valor de omega_D: " << omegaD << endl;
-    }
+    } 
+
 }
 
 long double calcula_corrente_resistor(long double resistor, long double tensao){
@@ -162,9 +165,9 @@ long double calcula_corrente_capacitor(long double corrente_resistor, long doubl
     }
 }
 
-long double calculo_para_b2(long double corrente_capacitor, long double capacitor, long double b1, long double omegaD, long double sigma){
-    long double primeira_parte = (corrente_capacitor/capacitor);
-    long double multi = (b1*sigma) - 2*(b1*sigma);
+double calculo_para_b2(double corrente_capacitor, double capacitor, double b1, double omegaD, double sigma){
+    double primeira_parte = (corrente_capacitor/capacitor);
+    double multi = (-1*b1*sigma);
     if(multi < 0){
         if(multi < primeira_parte){
             return (primeira_parte + multi)/omegaD;
@@ -178,25 +181,6 @@ long double calculo_para_b2(long double corrente_capacitor, long double capacito
     } else if (multi == primeira_parte){
         return 0;
     }
-    /*if(multi < 0 && primeira_parte < 0){
-        if(multi < primeira_parte){
-            return (primeira_parte - multi)/omegaD;
-        } else {
-            return (multi - primeira_parte)/omegaD;
-        }
-    } else if (multi > 0 && primeira_parte > 0){
-        return (multi + primeira_parte)/omegaD;
-    } else if (multi < 0 && primeira_parte > 0){
-        return (primeira_parte - multi)/omegaD;
-    } else if (multi > 0 && primeira_parte < 0){
-        return (multi - primeira_parte)/omegaD;
-    } else if (multi == 0 && primeira_parte != 0){
-        return primeira_parte/omegaD;
-    } else if (multi != 0 && primeira_parte == 0){
-        return multi/omegaD;
-    } else if (multi == primeira_parte){
-        return 0;
-    }*/
 }
 
 void exibe_b1_b2(long double b1, long double b2, long double sigma, long double omegaD){
@@ -228,29 +212,78 @@ void exibe_b1_b2(long double b1, long double b2, long double sigma, long double 
     }
 }
 
-int calcula_circuito(long double sigma, long double omega0, long double omegaD, long double vc_0, long double il_0, long double resistor, long double capacitor, long double indutor){
+void calcula_circuito(long double sigma, long double omega0, long double omegaD, long double vc_0, long double il_0, long double resistor, long double capacitor, long double indutor){
     const long double epsilon = 4.94065645841247E-324;
-    
-    if((omega0*omega0) > (sigma*sigma)){ // subamortecido
+
+    if((omega0*omega0) == (sigma*sigma)){ 
+        // criticamente amortecido
+        double a1, a2 = vc_0;
+        double vtm, tm;
+
+        a1 = (il_0/capacitor) + a2 * (-1*sigma);
+        cout << "Valor de a1 = " << a1 << endl;
+        cout << "Valor de a2 = " << a2 << endl;
+
+        tm = ((-1*a1) + (a2*sigma))/(a1*(-1*sigma));
+        cout << "Valor de tm = " << tm << " s" << endl;
+
+        vtm = (a1*tm + a2)*exp(-1*sigma*tm);
+        cout << "Valor de V(tm) = " << vtm << " v" << endl;
+
+    }
+
+    if((omega0*omega0) < (sigma*sigma)){
+        // super amortecido
+        double diferenca = sqrt((sigma*sigma) - (omega0*omega0));
+        double s1 = (-1*sigma) + diferenca;
+        double s2 = (-1*sigma) - diferenca;
+        double a2, a1, tm, v_tm;
+
+        cout << "S1 = " << s1 << endl;
+        cout << "S2 = " << s2 << endl;
+
+        a1 = (-1*((il_0/capacitor) + (s1*vc_0))/(s2-s1));
+        a2 = vc_0 - a1;
+
+        cout << "A1 = " << a1 << endl;
+        cout << "A2 = " << a2 << endl;
         
-        long double corrente_resistor = 0;
-        long double corrente_capacitor = 0;
+        double calc_log = log((-1*(a1*(s1)))/(a2*s2));
+    
+        tm = calc_log/(s2-s1); 
+        cout << "tm = " << tm << " (s)" << endl;
+
+        v_tm = (a1*exp(s1*tm))+(a2*exp(s2*tm));
+        cout << "V(tm) = " << v_tm << " (v)" << endl;
+    }
+    
+    if((omega0*omega0) > (sigma*sigma)){ 
+        // subamortecido
+        double corrente_resistor = 0.0;
+        double corrente_capacitor = 0.0;
+        double vtm, tm, periodo;
         
         long double b1 = vc_0, b2 = 0;
         corrente_resistor = calcula_corrente_resistor(resistor, vc_0);
         corrente_capacitor = calcula_corrente_capacitor(corrente_resistor, il_0);
-        cout << "Corrente capacitor: " << corrente_capacitor << endl;
         b2 = calculo_para_b2(corrente_capacitor, capacitor, b1, omegaD, sigma);
 
         cout << "Valor de b1: " << b1 << endl;
         cout << "Valor de b2: " << b2 << endl;
+        
+        tm = atan( (b2*omegaD-b1*sigma) / (b1*omegaD+b2*sigma) ) / omegaD;
+
+        if(tm < 0){
+            periodo = (2*3.1415926) / omegaD;
+            tm = tm + (periodo/2);   
+        }
+        cout << "Valor de tm = " << tm << " s" << endl;
+
+        vtm = (exp(-sigma*tm))*((b1*cos(omegaD*tm))+(b2*sin(omegaD*tm)));
+        cout << "Valor de V(tm) = " << vtm << " v" << endl;
+
         exibe_b1_b2(b1, b2, sigma, omegaD);
-
-    } else if((omega0*omega0) == (sigma*sigma)){ // criticamente amortecido
-
-    } else { // super amortecido
-
-    }
+    } 
 }
 
 void saida(long double sigma, long double omega0, long double omegaD, long double vc_0, long double il_0, long double resistor, long double capacitor, long double indutor){
@@ -260,32 +293,18 @@ void saida(long double sigma, long double omega0, long double omegaD, long doubl
     calcula_circuito(sigma, omega0, omegaD, vc_0, il_0, resistor, capacitor, indutor);
 }
 
-void calcula_tm(long double b1, long double b2, long double sigma, long double omegaD, long double omega0){
-    long double tm = 0;
-    if(testa_subamortecido(sigma, omega0)){
-        if(b1 == 0){
-            long double calc_para_arctg = omegaD / (-sigma);
-            tm = atan(calc_para_arctg) / omegaD;
-            cout << "O valor de tm: " << tm << endl;
-        } else if (b2 == 0){
-            long double calc_para_arctg = (-sigma) / (omegaD);
-            tm = atan(calc_para_arctg) / 4,545;
-        }
-    }
-}
-
 int main(){
-    long double resistor = 0;
-    long double capacitor = 0;
-    long double indutor = 0;
+    double resistor = 0;
+    double capacitor = 0;
+    double indutor = 0;
     int unidade = 0;
 
-    long double v_c0 = 0;
-    long double i_l0 = 0;
+    double v_c0 = 0;
+    double i_l0 = 0;
 
-    long double sigma = 0;
-    long double omega0 = 0;
-    long double omegaD = 0;
+    double sigma = 0;
+    double omega0 = 0;
+    double omegaD = 0;
 
     cout << "-- BEM VINDO -- \n"
     // Para o resistor
@@ -390,5 +409,4 @@ int main(){
     saida(sigma, omega0, omegaD, v_c0, i_l0, resistor, capacitor, indutor);
 
     return 0;
-    
 }
